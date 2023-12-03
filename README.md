@@ -1,5 +1,12 @@
 # Banking-and-Finance-for-DA
 This repo will help new DA folks to re use code to get a better analysis report related to banking and finance.
+## Common Banking and Finance Terminologies
+### - Customer Identification Number (CIN)
+### - Account Number
+### - Account Opening Date
+### - Account Close Date
+### - Account Opening Balance
+### - Account Closing Balance
 ## Data frame column format (String)
 ## Group by in detail
 ## Break a dataframe containing array
