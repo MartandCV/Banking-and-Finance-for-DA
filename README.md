@@ -127,6 +127,26 @@ This does not conform to the standard use of null, which is never equal to anyth
 select null = null
 -- returns null, not True
 ## Break a dataframe containing array
+
+
+      root
+      |--id: string(nullable = true)
+      |--cins: array(nullable = true)
+      |  |--element: struct(containsNull = true)
+      |  |  |--cin: string(nullable = true)
+      |  |  |--customerName: string(nullable = true)
+      |  |  |--bookincountry: string(nullable = true)
+      |  |  |--cinFlag: string(nullable = true)
+
+#### We need to use "explode" to retrieve array value for each id.
+
+      df = ex.withColumn("CinInfo",explode(col("cins")))
+
+#### To select any of the array element we need to follow the respective coding style
+
+      df.select(col("CinInfo").cin).show()
+
+
 ## Explode function in detail
 ## Break a dataframe containing structure
 ## Convert and dataframe column to list
