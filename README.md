@@ -48,15 +48,16 @@ More Interesting Things About SQL GROUP BY
 1. Aggregations Can Be Filtered Using The HAVING Clause
 You will quickly discover that the where clause cannot be used on an aggregation. For instance:
 
-select 
-  continent
-  , max(area)
-from
-  countries
-where 
-  max(area) >= 1e7
-group by 
-  1
+      select 
+        continent
+        , max(area)
+      from
+        countries
+      where 
+        max(area) >= 1e7
+      group by 
+        1
+   
 will not work, and will throw an error. This is because the where statement is evaluated before any aggregations take place. The alternate having is placed after the group by and allows you to filter the returned data by an aggregated column.
 
 Using having, you can return the aggregate filtered results!
@@ -64,13 +65,14 @@ Using having, you can return the aggregate filtered results!
 2. You Can Often GROUP BY Column Number
 In many databases, you can group by column number as well as column name. Our first query could have been written:
 
-select
-  continent
-  , count(*)
-from 
-  base
-group by 
-  1
+      select
+        continent
+        , count(*)
+      from 
+        base
+      group by 
+        1
+   
 and returned the same results. This is called ordinal notation and its use is debated. It predates column based notation and was SQL standard until the 1980s. 
 
 It is less explicit, which can reduce legibility for some users. 
@@ -80,28 +82,30 @@ On the other hand, it has a few benefits.
 SQL coders tend toward a consistent pattern of selecting dimensions first and aggregates second. This makes reading SQL more predictable.
 It is easier to maintain on large queries. When writing long ETL statements, I have had group by statements that were many, many lines long. I found this difficult to maintain.
 Some databases allow using an aliased column in the group by. This allows a long case statement to be grouped without repeating the full statement in the group by clause. Using ordinal positions can be cleaner and prevent you from unintentionally grouping by an alias that matches a column name in the underlying data. For example, the following query will return the correct values:
+
 -- How many countries use a currency called the dollar?
-select
-  case when currency = 'Dollar' then currency
-    else 'Other'
-  end as currency --bad alias
-  , count(*)
-from
-  countries
-group by
-  1
+
+      select
+        case when currency = 'Dollar' then currency
+          else 'Other'
+        end as currency --bad alias
+        , count(*)
+      from
+        countries
+      group by
+        1
 Currency count table
 But this will not, and will segment by the base table’s currency field while accepting the new alias column labels:
 
-select
-  case when currency = 'Dollar' then currency 
-    else 'Other' 
-  end as currency --bad alias
-  , count(*)
-from 
-  countries
-group by 
-  currency
+      select
+        case when currency = 'Dollar' then currency 
+          else 'Other' 
+        end as currency --bad alias
+        , count(*)
+      from 
+        countries
+      group by 
+        currency
 Dollar and others chart
 This is ‘expected’ behavior, but remain vigilant.
 
@@ -111,13 +115,14 @@ A common practice is to use ordinal positions for ad hoc work and column names f
 There is one case where you can take an aggregation without using a group by. When you are aggregating the full table there is an implied SQL group by. This is known as the <grand total> in SQL standards documentation.
 
 -- What is the largest and average country size in Europe?
-select
-  max(area) as largest_country
-  , avg(area) as avg_country_area
-from 
-  countries
-where 
-  continent = 'Europe'
+
+      select
+        max(area) as largest_country
+        , avg(area) as avg_country_area
+      from 
+        countries
+      where 
+        continent = 'Europe'
 Largest country table
 4. GROUP BY Treats Null as Groupable Value, and that is Strange.
 When your data set contains multiple null values, group by will treat them as a single value and aggregate for the set.
@@ -277,6 +282,13 @@ PySpark SQL explode_outer(e: Column) function is used to create a row for each e
       
 ## Break a dataframe containing structure
 ## Convert and dataframe column to list
+
+      mast_list = df.select("mastergroupId").rdd.flatMap(lambda x: x).collect()
+
+The above converts a dataframe column to list now this list can be search or matched with other dataframe columns.
+
+      df_2.filter(col("masterId").isin(mast_list)).distinct().show()
+      
 ## Search one column data into another
 ## Things to remember while performing join
 ## Difference between spark and pyspark coding style
