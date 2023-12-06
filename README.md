@@ -148,6 +148,133 @@ select null = null
 
 
 ## Explode function in detail
+
+      import pyspark
+      from pyspark.sql import SparkSession
+      spark = SparkSession.builder.appName('pyspark-by-examples').getOrCreate()
+
+      arrayData = [
+              ('James',['Java','Scala'],{'hair':'black','eye':'brown'}),
+              ('Michael',['Spark','Java',None],{'hair':'brown','eye':None}),
+              ('Robert',['CSharp',''],{'hair':'red','eye':''}),
+              ('Washington',None,None),
+              ('Jefferson',['1','2'],{})
+
+      df = spark.createDataFrame(data=arrayData, schema = ['name','knownLanguages','properties'])
+      df.printSchema()
+      df.show()
+
+
+      # Output
+      root
+       |-- name: string (nullable = true)
+       |-- knownLanguages: array (nullable = true)
+       |    |-- element: string (containsNull = true)
+       |-- properties: map (nullable = true)
+       |    |-- key: string
+       |    |-- value: string (valueContainsNull = true)
+      
+      +----------+--------------+--------------------+
+      |      name|knownLanguages|          properties|
+      +----------+--------------+--------------------+
+      |     James| [Java, Scala]|[eye -> brown, ha...|
+      |   Michael|[Spark, Java,]|[eye ->, hair -> ...|
+      |    Robert|    [CSharp, ]|[eye -> , hair ->...|
+      |Washington|          null|                null|
+      | Jefferson|        [1, 2]|                  []|
+      +----------+--------------+--------------------+
+
+#### explode() – PySpark explode array or map column to rows
+PySpark function explode(e: Column) is used to explode or create array or map columns to rows. When an array is passed to this function, it creates a new default column “col1” and it contains all array elements. 
+
+      # explode() on array column
+      from pyspark.sql.functions import explode
+      df2 = df.select(df.name,explode(df.knownLanguages))
+      df2.printSchema()
+      df2.show()
+
+      # Output
+      root
+       |-- name: string (nullable = true)
+       |-- col: string (nullable = true)
+      
+      +---------+------+
+      |     name|   col|
+      +---------+------+
+      |    James|  Java|
+      |    James| Scala|
+      |  Michael| Spark|
+      |  Michael|  Java|
+      |  Michael|  null|
+      |   Robert|CSharp|
+      |   Robert|      |
+      |Jefferson|     1|
+      |Jefferson|     2|
+      +---------+------+
+
+#### explode – map column example
+
+      # explode() on map column
+      from pyspark.sql.functions import explode
+      df3 = df.select(df.name,explode(df.properties))
+      df3.printSchema()
+      df3.show()
+
+      # Output
+      root
+       |-- name: string (nullable = true)
+       |-- key: string (nullable = false)
+       |-- value: string (nullable = true)
+      
+      +-------+----+-----+
+      |   name| key|value|
+      +-------+----+-----+
+      |  James| eye|brown|
+      |  James|hair|black|
+      |Michael| eye| null|
+      |Michael|hair|brown|
+      | Robert| eye|     |
+      | Robert|hair|  red|
+      +-------+----+-----+
+
+#### explode_outer() – Create rows for each element in an array or map.
+PySpark SQL explode_outer(e: Column) function is used to create a row for each element in the array or map column. Unlike explode, if the array or map is null or empty, explode_outer returns null.
+
+      # explode_outer() on array and map column
+      from pyspark.sql.functions import explode_outer
+      df.select(df.name,explode_outer(df.knownLanguages)).show()
+      df.select(df.name,explode_outer(df.properties)).show()
+
+      # DataFrame after explode_outer() on knownLanguages
+      +-----------+--------+
+      |name       |language|
+      +-----------+--------+
+      |James      |Java    |
+      |James      |Scala   |
+      |Michael    |Spark   |
+      |Michael    |Java    |
+      |Michael    |null    |
+      |Robert     |CSharp  |
+      |Robert     |        |
+      |Washington |null    |
+      |Jefferson  |1       |
+      |Jefferson  |2       |
+      +-----------+--------+
+
+      # DataFrame after explode_outer() on properties
+      +-----------+------------+--------------+
+      |name       |property_key|property_value|
+      +-----------+------------+--------------+
+      |James      |hair        |black         |
+      |James      |eye         |brown         |
+      |Michael    |hair        |brown         |
+      |Michael    |eye         |null          |
+      |Robert     |hair        |red           |
+      |Robert     |eye         |              |
+      |Washington |null        |null          |
+      |Jefferson  |            |              |
+      +-----------+------------+--------------+
+      
 ## Break a dataframe containing structure
 ## Convert and dataframe column to list
 ## Search one column data into another
