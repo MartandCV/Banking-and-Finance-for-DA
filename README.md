@@ -18,6 +18,26 @@ This repo will help new DA folks to re use code to get a better analysis report 
 ### - Account Closing Balance
       In banking, the closing balance simply refers to the bank balance at the end of a day, month, or year. This includes both credit and debit amounts.
 ## Data frame column format (String)
+
+## Different type of files you will come across (delta, parquet,csv,xlsx)
+
+### Read parquet file
+
+      df = spark.read.parquet("/tmp/resource/path.parquet")
+      
+### Read csv file
+
+      df = spark.read.csv("/tmp/resources/zipcodes.csv")
+      
+### Read delta file
+
+      df = spark.read.format("delta").load(path_to_data)
+
+### Read xlsx file
+
+      dF = spark.read.format(“/tmp/resources/zipcodes.xlsx”)
+
+
 ## Group by in detail
    Group by is one of the most frequently used SQL clauses. It allows you to collapse a field into its distinct values. 
    This clause is most often used with aggregations to show one value per grouped field or combination of fields.
@@ -285,15 +305,40 @@ PySpark SQL explode_outer(e: Column) function is used to create a row for each e
 
       mast_list = df.select("mastergroupId").rdd.flatMap(lambda x: x).collect()
 
+
+## Search one column data into another
+
 The above converts a dataframe column to list now this list can be search or matched with other dataframe columns.
 
       df_2.filter(col("masterId").isin(mast_list)).distinct().show()
+
       
-## Search one column data into another
 ## Things to remember while performing join
+
+The different types of SQL JOINs:
+
+- INNER JOIN (or simple JOIN) is the basic join type. It’s used to display matching records from both tables.
+- LEFT JOIN (or LEFT OUTER JOIN) is applied to keep all records from the left table and only matched records from the right table.
+- RIGHT JOIN (or RIGHT OUTER JOIN) is used to keep all the records from the right table and only matched records from the left table.
+- FULL JOIN (or FULL OUTER JOIN) is used to keep all records from all tables, even unmatched ones.
+- CROSS JOIN returns a result set with all possible combinations of the rows from two tables.
+
+Things to remember
+ 1. Use the JOIN and ON Keywords
+ 2. Choose Appropriate SQL JOIN Type
+ 3. Carefully Design the JOIN Condition
+ 4. Use Table Aliases
+ 5. Use Column Aliases
+
 ## Difference between spark and pyspark coding style
+
+PySpark is a Python API for Apache Spark, while Spark is an open-source big data processing framework written in Scala
+1. Value comparission in spark is done using "===" while pyspark uses "=="
+2. 
+
 ## Create and data analysis report for client
-## Different type of files you will come across (delta, parquet,csv,xlsx)
+
+
 ## Common functions used during data analysis.
 ## Difference and percentage rate calculation for two columns in a dataframe.
 ## Importance of creating tempview for a dataframe.
