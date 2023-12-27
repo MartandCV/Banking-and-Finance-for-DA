@@ -19,6 +19,23 @@ This repo will help new DA folks to re use code to get a better analysis report 
       In banking, the closing balance simply refers to the bank balance at the end of a day, month, or year. This includes both credit and debit amounts.
 ## Data frame column format (String)
 
+      import org.apache.spark.sql.functions.when
+      import spark.implicits._
+      df.withColumn("address",
+         when($"address".endsWith("Rd"),regexp_replace($"address","Rd","Road"))
+        .when($"address"endsWith("St"),regexp_replace($"address","St","Street"))
+        .when($"address"endsWith("Ave"),regexp_replace($"address","Ave","Avenue"))
+        .otherwise("address"))
+        .show(false)
+      
+      //+---+----------------------+-----+
+      //|id |address               |state|
+      //+---+----------------------+-----+
+      //|1  |14851 Jeffrey Road    |DE   |
+      //|2  |43421 Margarita Street|NY   |
+      //|3  |13111 Siemon Avenue   |CA   |
+      //+---+----------------------+-----+
+
 ## Different type of files you will come across (delta, parquet,csv,xlsx)
 
 ### Read parquet file
